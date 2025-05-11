@@ -13,34 +13,34 @@ $eventHandler = 'https://b24-hook.onrender.com/b24-hook.php';
 $url = "https://cultiv.bitrix24.com/rest/imbot.register.json?auth=" . $authId;
 
 $botData = [
-  'CODE' => 'inbox_bot',
-  'TYPE' => 'B',
-  'OPENLINE' => 'Y',
-  'EVENT_HANDLER' => $eventHandler,
-  'PROPERTIES' => [
-    'NAME' => 'Inbox Bot',
-    'COLOR' => 'GREEN'
-  ]
+    'CODE' => 'inbox_bot',
+    'TYPE' => 'B',
+    'OPENLINE' => 'Y',
+    'EVENT_HANDLER' => $eventHandler,
+    'PROPERTIES' => [
+        'NAME' => 'Inbox Bot',
+        'COLOR' => 'GREEN'
+    ]
 ];
 
-$options = [
-  'http' => [
-    'method'  => 'POST',
-    'header'  => 'Content-type: application/x-www-form-urlencoded',
-    'content' => http_build_query($botData)
-  ]
-];
-
-$context  = stream_context_create($options);
-
-// 🔻 Add this label BEFORE the request for clarity
+// Log that registration is about to begin
 error_log("=== Triggering bot registration with AUTH_ID: $authId ===");
 
-$response = file_get_contents($url, false, $context);
+// Use cURL for more stable HTTPS handling
+$ch = curl_init();
+
+curl_setopt($ch, CURLOPT_URL, $url);
+curl_setopt($ch, CURLOPT_POST, 1);
+curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($botData));
+curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+
+$response = curl_exec($ch);
+$error = curl_error($ch);
+
+curl_close($ch);
 
 if ($response === false) {
-    $error = error_get_last();
-    error_log("❌ Bot registration failed: " . $error['message']);
+    error_log("❌ cURL error during bot registration: $error");
     echo "Failed";
 } else {
     error_log("✅ Bot registration result: $response");

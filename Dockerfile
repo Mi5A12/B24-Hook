@@ -1,14 +1,15 @@
+# Use official PHP image
 FROM php:8.1-cli
 
 # Set working directory
 WORKDIR /var/www/html
 
-# Copy all files
+# Copy app files
 COPY . .
 
-# Expose the port used by the app
+# Expose port (Render uses PORT env variable, default to 8080)
 ENV PORT=8080
 EXPOSE 8080
 
-# Start the PHP built-in server and serve current dir
-CMD ["php", "-S", "0.0.0.0:8080", "-t", "/var/www/html"]
+# Start a PHP built-in server
+CMD ["php", "-S", "0.0.0.0:8080"]

@@ -2,7 +2,7 @@
 $clientId = "local.68209f97337681.69630009";        // From Bitrix24 app settings
 $clientSecret = "le2Wpb7mRQ8pDrRA1mmH0zpkmSLyvrPz4SxPD3rqJd28psNHrF";
 $domain = "https://cultiv.bitrix24.com";             // e.g., cultiv.bitrix24.com
-$webhookUrl = "https://your-server.com/b24-hook.php";  // Must match app handler
+$webhookUrl = "https://b24-hook.onrender.com/b24-hook.php";  // Must match app handler
 
 // Prepare API call to register the bot
 $url = "https://{$domain}/rest/{$clientId}/{$clientSecret}/imbot.register.json";

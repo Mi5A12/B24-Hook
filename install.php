@@ -35,7 +35,19 @@ curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($botData));
 curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 
 $response = curl_exec($ch);
+$httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
 $error = curl_error($ch);
+
+curl_close($ch);
+
+if ($response === false) {
+    error_log("❌ cURL error during bot registration: $error");
+    echo "Failed";
+} else {
+    error_log("✅ HTTP Status Code: $httpCode");
+    error_log("✅ Bot registration result: $response");
+    echo $response;
+}
 
 curl_close($ch);
 

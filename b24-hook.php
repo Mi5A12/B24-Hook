@@ -1,22 +1,26 @@
 <?php
-// Receive JSON payload
+// Receive incoming JSON
 $input = file_get_contents("php://input");
 $data = json_decode($input, true);
 
-// Log raw payload (optional: for testing)
-file_put_contents("b24-log.txt", date("Y-m-d H:i:s") . "\n" . $input . "\n\n", FILE_APPEND);
+// Log raw payload for debugging
+error_log("=== Incoming Webhook ===");
+error_log($input);
 
-// Extract message text
+// Extract useful info
 $message = $data['data']['PARAMS']['MESSAGE'] ?? '';
 $dialogId = $data['data']['PARAMS']['DIALOG_ID'] ?? '';
 $userId   = $data['data']['PARAMS']['USER_ID'] ?? '';
 
-// Extract URLs from the message using regex
+// Extract URLs using regex
 preg_match_all('/https?:\/\/[^\s]+/', $message, $matches);
 $foundLinks = $matches[0];
 
-// Debug output
-file_put_contents("b24-log.txt", "User ID: $userId\nDialog: $dialogId\nMessage: $message\nLinks: " . implode(", ", $foundLinks) . "\n\n", FILE_APPEND);
+// Log parsed values
+error_log("User ID: $userId");
+error_log("Dialog ID: $dialogId");
+error_log("Message: $message");
+error_log("Links Found: " . implode(', ', $foundLinks));
 
 // Respond to Bitrix
 echo json_encode(["result" => "ok"]);

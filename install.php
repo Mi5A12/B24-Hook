@@ -38,8 +38,11 @@ error_log("=== Triggering bot registration with AUTH_ID: $authId ===");
 
 $response = file_get_contents($url, false, $context);
 
-// 🔻 These two are already good — keep them
-error_log("=== Bot registration result ===");
-error_log($response);
-
-echo $response;
+if ($response === false) {
+    $error = error_get_last();
+    error_log("❌ Bot registration failed: " . $error['message']);
+    echo "Failed";
+} else {
+    error_log("✅ Bot registration result: $response");
+    echo $response;
+}

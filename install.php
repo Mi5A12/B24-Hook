@@ -32,7 +32,14 @@ $options = [
 ];
 
 $context  = stream_context_create($options);
+
+// 🔻 Add this label BEFORE the request for clarity
+error_log("=== Triggering bot registration with AUTH_ID: $authId ===");
+
 $response = file_get_contents($url, false, $context);
 
-error_log("Bot registration result: $response");
+// 🔻 These two are already good — keep them
+error_log("=== Bot registration result ===");
+error_log($response);
+
 echo $response;

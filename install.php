@@ -1,7 +1,7 @@
 <?php
-$clientId = "YOUR_CLIENT_ID";        // From Bitrix24 app settings
-$clientSecret = "YOUR_CLIENT_SECRET";
-$domain = "YOUR_DOMAIN";             // e.g., cultiv.bitrix24.com
+$clientId = "local.68209f97337681.69630009";        // From Bitrix24 app settings
+$clientSecret = "le2Wpb7mRQ8pDrRA1mmH0zpkmSLyvrPz4SxPD3rqJd28psNHrF";
+$domain = "https://cultiv.bitrix24.com";             // e.g., cultiv.bitrix24.com
 $webhookUrl = "https://your-server.com/b24-hook.php";  // Must match app handler
 
 // Prepare API call to register the bot

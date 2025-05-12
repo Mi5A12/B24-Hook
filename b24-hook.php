@@ -1,29 +1,28 @@
 <?php
-$raw = file_get_contents("php://input");
+parse_str(file_get_contents("php://input"), $parsed);
 
-// TEMP DEBUG — log raw incoming body
-error_log("=== RAW INPUT ===");
-error_log($raw);
+// Confirm structure is what we expect
+$data = $parsed['data'] ?? [];
 
-// Also dump parsed form keys
-parse_str($raw, $parsed);
-error_log("=== Parsed Keys ===");
-error_log(print_r($parsed, true));
+if (is_array($data)) {
+    // No need to decode, it's already an array
+    $message  = $data['PARAMS']['MESSAGE'] ?? '';
+    $dialogId = $data['PARAMS']['DIALOG_ID'] ?? '';
+    $userId   = $data['PARAMS']['FROM_USER_ID'] ?? '';
 
-// Extract values
-$message  = $data['PARAMS']['MESSAGE'] ?? '';
-$dialogId = $data['PARAMS']['DIALOG_ID'] ?? '';
-$userId   = $data['PARAMS']['FROM_USER_ID'] ?? '';
+    // Extract links
+    preg_match_all('/https?:\/\/[^\s]+/', $message, $matches);
+    $foundLinks = $matches[0];
 
-// Extract URLs
-preg_match_all('/https?:\/\/[^\s]+/', $message, $matches);
-$foundLinks = $matches[0];
+    // Log everything
+    error_log("User ID: $userId");
+    error_log("Dialog ID: $dialogId");
+    error_log("Message: $message");
+    error_log("Links Found: " . implode(', ', $foundLinks));
+} else {
+    error_log("⚠️ Unexpected payload structure:");
+    error_log(print_r($parsed, true));
+}
 
-// Log clean values
-error_log("User ID: $userId");
-error_log("Dialog ID: $dialogId");
-error_log("Message: $message");
-error_log("Links Found: " . implode(', ', $foundLinks));
-
-// Respond to Bitrix
+// Always respond with 200 OK
 echo json_encode(["result" => "ok"]);

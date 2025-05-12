@@ -1,14 +1,14 @@
 <?php
-// Parse form-encoded input
-parse_str(file_get_contents("php://input"), $parsed);
+$raw = file_get_contents("php://input");
 
-// Ensure 'data' is a string before decoding
-$dataRaw = $parsed['data'] ?? '';
-$data = is_string($dataRaw) ? json_decode($dataRaw, true) : [];
+// TEMP DEBUG — log raw incoming body
+error_log("=== RAW INPUT ===");
+error_log($raw);
 
-// Log full parsed result
-error_log("=== Incoming Webhook ===");
-error_log(print_r($data, true));
+// Also dump parsed form keys
+parse_str($raw, $parsed);
+error_log("=== Parsed Keys ===");
+error_log(print_r($parsed, true));
 
 // Extract values
 $message  = $data['PARAMS']['MESSAGE'] ?? '';

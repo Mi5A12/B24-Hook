@@ -1,7 +1,7 @@
 <?php
 // Receive incoming JSON
-$input = file_get_contents("php://input");
-$data = json_decode($input, true);
+parse_str(file_get_contents("php://input"), $parsed);
+$data = json_decode($parsed['data'], true);
 
 // Log full incoming payload for debugging
 error_log("=== Incoming Webhook ===");

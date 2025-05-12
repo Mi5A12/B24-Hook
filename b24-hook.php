@@ -10,7 +10,7 @@ error_log($input);
 // Extract useful info
 $message  = $data['data']['PARAMS']['MESSAGE'] ?? '';
 $dialogId = $data['data']['PARAMS']['DIALOG_ID'] ?? '';
-$userId   = $data['data']['PARAMS']['USER_ID'] ?? '';
+$userId   = $data['data']['PARAMS']['FROM_USER_ID'] ?? ''; // corrected
 
 // Extract URLs using regex
 preg_match_all('/https?:\/\/[^\s]+/', $message, $matches);

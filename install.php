@@ -1,8 +1,7 @@
 <?php
-$input = file_get_contents('php://input');
+$input = file_get_contents("php://input");
 $data = json_decode($input, true);
 
-// Extract auth token from Bitrix payload
 $authId = $data['auth']['access_token'] ?? null;
 if (!$authId) {
     error_log("❌ No AUTH_ID received.");
@@ -23,27 +22,15 @@ $botData = [
     ]
 ];
 
-error_log("=== Triggering bot registration with AUTH_ID: $authId ===");
+$options = [
+    'http' => [
+        'method' => 'POST',
+        'header' => 'Content-type: application/x-www-form-urlencoded',
+        'content' => http_build_query($botData)
+    ]
+];
 
-$ch = curl_init();
-curl_setopt($ch, CURLOPT_URL, $url);
-curl_setopt($ch, CURLOPT_POST, 1);
-curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($botData));
-curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-curl_setopt($ch, CURLOPT_HEADER, true); // get response headers
-curl_setopt($ch, CURLOPT_TIMEOUT, 10);
-
-$response = curl_exec($ch);
-$httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-$error = curl_error($ch);
-
-curl_close($ch);
-
-if ($response === false) {
-    error_log("❌ cURL error during bot registration: $error");
-    echo "Failed";
-} else {
-    error_log("📡 HTTP Code: $httpCode");
-    error_log("✅ Raw response: $response");
-    echo $response;
-}
+$context = stream_context_create($options);
+$response = file_get_contents($url, false, $context);
+error_log("🟢 Bot registration response: $response");
+echo $response;

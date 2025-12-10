@@ -75,33 +75,40 @@ function sendMessageToDialog($dialogId, $accessToken, $userMessage, $links, $dea
         $responseMessage .= "\n💼 Deal ID: " . $dealId;
     }
 
-    // Bitrix24 API endpoint for sending messages
-    $url = "https://cultiv.bitrix24.com/rest/im.message.add.json?auth=" . $accessToken;
+    // Bitrix24 API endpoint for sending messages via bot
+    $url = "https://cultiv.bitrix24.com/rest/imbot.message.add.json?auth=" . $accessToken;
 
-    // Message payload
+    // Message payload - use proper format for imbot.message.add
     $messageData = [
         'DIALOG_ID' => $dialogId,
-        'MESSAGE' => $responseMessage,
-        'SYSTEM' => 'N'
+        'MESSAGE' => $responseMessage
     ];
 
-    // Send POST request
-    $options = [
-        'http' => [
-            'method'  => 'POST',
-            'header'  => 'Content-type: application/x-www-form-urlencoded',
-            'content' => http_build_query($messageData)
-        ]
-    ];
+    error_log("📤 Sending message to dialog $dialogId with token: " . substr($accessToken, 0, 10) . "...");
+    error_log("📝 Message content: $responseMessage");
 
-    $context = stream_context_create($options);
-    $response = @file_get_contents($url, false, $context);
+    // Send POST request using cURL for better reliability
+    $ch = curl_init();
+    curl_setopt($ch, CURLOPT_URL, $url);
+    curl_setopt($ch, CURLOPT_POST, 1);
+    curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($messageData));
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_TIMEOUT, 10);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
 
-    if ($response === false) {
-        error_log("❌ Failed to send response message to dialog $dialogId");
+    $response = curl_exec($ch);
+    $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    $curlError = curl_error($ch);
+    curl_close($ch);
+
+    if ($curlError) {
+        error_log("❌ cURL error when sending message: $curlError");
+    } elseif ($httpCode !== 200) {
+        error_log("❌ API returned HTTP $httpCode when sending to dialog $dialogId");
+        error_log("Response: $response");
     } else {
         error_log("✅ Response message sent to dialog $dialogId");
-        error_log("Response: $response");
+        error_log("API Response: $response");
     }
 }
 
